@@ -1,0 +1,47 @@
+<!-- products/templates/products/create_marketplace.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create a New Marketplace</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+</head>
+<body>
+    <h1>Create a New Marketplace</h1>
+    <form id="create-marketplace-form" enctype="multipart/form-data">
+{#        {% csrf_token %}#}
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="logo">Logo:</label>
+        <input type="file" id="logo" name="logo">
+        <br>
+        <button type="button" onclick="createMarketplace()">Save</button>
+    </form>
+
+    <script>
+        function createMarketplace() {
+            const form = document.getElementById('create-marketplace-form');
+            const formData = new FormData(form);
+
+            $.ajax({
+                type: 'POST',
+                url: '/create_marketplace_api/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    // Handle the response here (e.g., show a success message)
+                    console.log('MarketPlace created successfully:', data);
+                    // Redirect to the list of marketplaces after successful creation
+                    {#window.location.href = '/products/marketplace_list/';#}
+                },
+                error: function (error) {
+                    // Handle the error here (e.g., show an error message)
+                    console.error('Error creating MarketPlace:', error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
