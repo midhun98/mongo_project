@@ -47,6 +47,23 @@ class MarketplaceViewSet(viewsets.ViewSet):
             print("Error:", e)
             return Response("Error retrieving Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def update(self, request, pk=None):
+        try:
+            data = request.data
+            marketplace = marketplace_collection.find_one_and_update(
+                {'_id': ObjectId(pk)},
+                {'$set': data},
+                return_document=True
+            )
+
+            if marketplace:
+                return Response(marketplace, status=status.HTTP_200_OK)
+            else:
+                return Response("Marketplace not found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error updating Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def list(self, request):
         all_marketplaces = list(marketplace_collection.find({}, {'_id': 0}))
         return Response(all_marketplaces)
