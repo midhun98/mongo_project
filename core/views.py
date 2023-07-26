@@ -1,8 +1,9 @@
 from django.http import HttpResponse
 from core.models import person_collection, marketplace_collection
-from rest_framework.decorators import api_view
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
 import base64
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 def index(request):
     return HttpResponse("<h1>app is running</h1>")
@@ -20,28 +21,25 @@ def get_all_person(request):
     return HttpResponse(persons)
 
 
-@csrf_exempt
-@api_view(['POST'])
-def create_marketplace_api(request):
-    try:
-        name = request.data['name']
-        logo = request.data['logo']
+class CreateMarketplaceAPI(APIView):
+    def post(self, request):
+        try:
+            name = request.data.get('name')
+            logo = request.data.get('logo')
 
-        if logo:
-            logo_base64 = base64.b64encode(logo.read()).decode('utf-8')
-        else:
-            logo_base64 = None
+            if logo:
+                logo_base64 = base64.b64encode(logo.read()).decode('utf-8')
+            else:
+                logo_base64 = None
 
-        records = {
-            "name": name,
-            "logo": logo_base64
-        }
+            records = {
+                "name": name,
+                "logo": logo_base64
+            }
 
-        marketplace_collection.insert_one(records)
-        print("done")
-        return HttpResponse("Marketplace added")
-    except Exception as e:
-        print("Error:", e)
-        return HttpResponse("Error adding Marketplace", status=500)
-
-
+            marketplace_collection.insert_one(records)
+            print("done")
+            return Response("Marketplace added", status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error adding Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
