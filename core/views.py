@@ -1,11 +1,14 @@
+from bson import ObjectId
 from django.http import HttpResponse
 from core.models import person_collection, marketplace_collection
 from rest_framework import status, viewsets
 import base64
 from rest_framework.response import Response
 
+
 def index(request):
     return HttpResponse("<h1>app is running</h1>")
+
 
 def add_person(request):
     records = {
@@ -16,11 +19,33 @@ def add_person(request):
     return HttpResponse("New person added")
 
 def get_all_person(request):
-    persons =  person_collection.find()
+    persons = person_collection.find()
     return HttpResponse(persons)
 
 
-class marketplaceViewSet(viewsets.ViewSet):
+class MarketplaceViewSet(viewsets.ViewSet):
+
+    def destroy(self, request, pk=None):
+        try:
+            marketplace = marketplace_collection.find_one_and_delete({'_id': ObjectId(pk)})
+            if marketplace:
+                return Response("Marketplace deleted", status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response("Marketplace not found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error deleting Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def retrieve(self, request, pk=None):
+        try:
+            marketplace = marketplace_collection.find_one({'_id': ObjectId(pk)}, {'_id': 0})
+            if marketplace:
+                return Response(marketplace, status=status.HTTP_200_OK)
+            else:
+                return Response("Marketplace not found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error retrieving Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def list(self, request):
         all_marketplaces = list(marketplace_collection.find({}, {'_id': 0}))
