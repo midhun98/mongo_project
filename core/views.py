@@ -1,8 +1,7 @@
 from django.http import HttpResponse
 from core.models import person_collection, marketplace_collection
-from rest_framework import status
+from rest_framework import status, viewsets
 import base64
-from rest_framework.views import APIView
 from rest_framework.response import Response
 
 def index(request):
@@ -21,8 +20,13 @@ def get_all_person(request):
     return HttpResponse(persons)
 
 
-class CreateMarketplaceAPI(APIView):
-    def post(self, request):
+class marketplaceViewSet(viewsets.ViewSet):
+
+    def list(self, request):
+        all_marketplaces = list(marketplace_collection.find({}, {'_id': 0}))
+        return Response(all_marketplaces)
+
+    def create(self, request):
         try:
             name = request.data.get('name')
             logo = request.data.get('logo')
@@ -38,7 +42,6 @@ class CreateMarketplaceAPI(APIView):
             }
 
             marketplace_collection.insert_one(records)
-            print("done")
             return Response("Marketplace added", status=status.HTTP_201_CREATED)
         except Exception as e:
             print("Error:", e)
