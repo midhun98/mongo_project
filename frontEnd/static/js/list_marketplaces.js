@@ -43,7 +43,6 @@ careerData.done(function (data) {
 
     $(document).on("click", ".edit-career", function () {
         let marketId = $(this).data("id");
-        let row = $(this).closest("tr");
 
         // Make an API call to retrieve the marketplace details
         $.ajax({
@@ -83,7 +82,7 @@ careerData.done(function (data) {
                             data: formData,
                             processData: false,
                             contentType: false,
-                            success: function (response) {
+                            success: function () {
                                 // Handle the successful update here (e.g., show a success message)
                                 swal.fire('Changes Saved!', '', 'success');
                             },
@@ -166,5 +165,3 @@ careerData.done(function (data) {
         });
     });
 });
-
-
