@@ -1,4 +1,3 @@
-from django.db import models
 from db_connection import db
 from mongoengine import Document, StringField, IntField, ImageField, DateTimeField, ReferenceField
 
@@ -6,6 +5,8 @@ from mongoengine import Document, StringField, IntField, ImageField, DateTimeFie
 
 person_collection = db['Person']
 marketplace_collection = db['Marketplace']
+
+
 class MarketPlace(Document):
     name = StringField(max_length=50)
     logo = ImageField(collection_name='market_place_images')

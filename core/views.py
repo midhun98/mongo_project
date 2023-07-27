@@ -1,9 +1,13 @@
-from bson import ObjectId
+from bson import ObjectId, json_util
 from django.http import HttpResponse
 from core.models import person_collection, marketplace_collection
 from rest_framework import status, viewsets
 import base64
 from rest_framework.response import Response
+import json
+import os
+import uuid
+from django.conf import settings
 
 
 def index(request):
@@ -18,6 +22,7 @@ def add_person(request):
     person_collection.insert_one(records)
     return HttpResponse("New person added")
 
+
 def get_all_person(request):
     persons = person_collection.find()
     return HttpResponse(persons)
@@ -26,6 +31,7 @@ def get_all_person(request):
 class MarketplaceViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
+        print("hiiii", pk)
         try:
             marketplace = marketplace_collection.find_one_and_delete({'_id': ObjectId(pk)})
             if marketplace:
@@ -65,8 +71,11 @@ class MarketplaceViewSet(viewsets.ViewSet):
             return Response("Error updating Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def list(self, request):
-        all_marketplaces = list(marketplace_collection.find({}, {'_id': 0}))
+        all_marketplaces = list(marketplace_collection.find({}))
+        for marketplace in all_marketplaces:
+            marketplace['_id'] = str(marketplace['_id'])
         return Response(all_marketplaces)
+
 
     def create(self, request):
         try:
@@ -74,14 +83,24 @@ class MarketplaceViewSet(viewsets.ViewSet):
             logo = request.data.get('logo')
 
             if logo:
-                logo_base64 = base64.b64encode(logo.read()).decode('utf-8')
-            else:
-                logo_base64 = None
+                # Generate a unique filename for the image
+                filename = f"{uuid.uuid4()}.png"
 
-            records = {
-                "name": name,
-                "logo": logo_base64
-            }
+                # Save the image to the media directory
+                with open(os.path.join(settings.MEDIA_ROOT, 'marketplace_images', filename), 'wb') as image_file:
+                    image_file.write(logo.read())
+
+                # Save the image URL in the database
+                records = {
+                    "name": name,
+                    "logo": os.path.join(settings.MEDIA_URL, 'marketplace_images', filename)
+                }
+            else:
+                # If no logo is provided, save None in the database
+                records = {
+                    "name": name,
+                    "logo": None
+                }
 
             marketplace_collection.insert_one(records)
             return Response("Marketplace added", status=status.HTTP_201_CREATED)
