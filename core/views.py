@@ -29,7 +29,6 @@ def get_all_person(request):
 class MarketplaceViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
-        print("hiiii", pk)
         try:
             marketplace = marketplace_collection.find_one_and_delete({'_id': ObjectId(pk)})
             if marketplace:
