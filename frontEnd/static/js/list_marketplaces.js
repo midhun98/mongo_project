@@ -33,24 +33,70 @@ careerData.done(function (data) {
             {
                 data: null,
                 render: function (data) {
-                    var editButton = '<a href="#" class="btn btn-primary btn-sm edit-career" data-id="' + data._id + '">Edit</a>';
-                    var deleteButton = '<a href="#" class="btn btn-danger btn-sm delete-career" data-id="' + data._id + '">Delete</a>';
+                    let editButton = '<a href="#" class="btn btn-primary btn-sm edit-career" data-id="' + data._id + '">Edit</a>';
+                    let deleteButton = '<a href="#" class="btn btn-danger btn-sm delete-career" data-id="' + data._id + '">Delete</a>';
                     return editButton + ' ' + deleteButton;
                 }
             }
         ]
     });
 
-    $(document).on("click", ".view-message-btn", function () {
-        let message = $(this).attr("data-message");
+    $(document).on("click", ".edit-career", function () {
+        let marketId = $(this).data("id");
+        let row = $(this).closest("tr");
+
+        // You can fetch the existing data for the marketplace using an API call here, if needed.
+        // For simplicity, let's assume the data is already available in a variable called 'marketplaceData'.
+
+        // Show the Sweet Alert input fields for editing the marketplace details
         swal.fire({
-            title: 'Message',
-            text: message,
-            showCancelButton: false,
+            title: 'Edit Marketplace',
+            html: `
+            <input id="name" class="swal2-input" placeholder="Name" value="">
+            <input id="logo" class="swal2-input" placeholder="Logo URL" value="">
+        `,
+            showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Save Changes',
+            preConfirm: () => {
+                const name = swal.getPopup().querySelector('#name').value;
+                const logo = swal.getPopup().querySelector('#logo').value;
+                return {name: name, logo: logo};
+            }
+        }).then((result) => {
+            if (!result.dismiss) {
+                const editedData = result.value;
+                // Make a PATCH request to update the marketplace details
+                $.ajax({
+                    type: "PATCH",
+                    url: "/api/marketplaces/" + marketId + "/",
+                    headers: {
+                        'Content-type': 'application/json',
+                        'X-CSRFToken': csrftoken,
+                    },
+                    data: JSON.stringify(editedData),
+                    success: function () {
+                        // Update the data in the table (if needed)
+                        // For simplicity, let's assume we don't need to update the table data here.
+                        swal.fire(
+                            'Saved!',
+                            'Changes have been saved.',
+                            'success'
+                        );
+                    },
+                    error: function () {
+                        swal.fire(
+                            'Error!',
+                            'An error occurred while saving changes.',
+                            'error'
+                        );
+                    }
+                });
+            }
         });
     });
+
 
     $(document).on("click", ".delete-career", function () {
         let marketId = $(this).data("id");

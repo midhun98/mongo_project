@@ -50,7 +50,7 @@ class MarketplaceViewSet(viewsets.ViewSet):
             print("Error:", e)
             return Response("Error retrieving Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def update(self, request, pk=None):
+    def partial_update(self, request, pk=None):
         try:
             data = request.data
             marketplace = marketplace_collection.find_one_and_update(
@@ -60,7 +60,7 @@ class MarketplaceViewSet(viewsets.ViewSet):
             )
 
             if marketplace:
-                return Response(marketplace, status=status.HTTP_200_OK)
+                return Response('Marketplace updated',status=status.HTTP_200_OK)
             else:
                 return Response("Marketplace not found", status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
