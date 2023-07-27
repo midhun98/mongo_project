@@ -18,7 +18,18 @@ careerData.done(function (data) {
         data: data,
         columns: [
             {data: 'name'},
-            {data: 'logo'},
+            {
+            data: 'logo',
+            render: function (data) {
+                if (data) {
+                    // If the logo exists, show it as an image
+                    return '<img src="' + data + '" alt="Logo" height="50" width="50">';
+                } else {
+                    // If the logo doesn't exist, show a placeholder or an empty image
+                    return '<img src="" alt="No Logo" height="50" width="50">';
+                }
+            }
+            },
             {
                 data: null,
                 render: function (data) {

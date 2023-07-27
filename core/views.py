@@ -1,10 +1,8 @@
-from bson import ObjectId, json_util
+from bson import ObjectId
 from django.http import HttpResponse
 from core.models import person_collection, marketplace_collection
 from rest_framework import status, viewsets
-import base64
 from rest_framework.response import Response
-import json
 import os
 import uuid
 from django.conf import settings
@@ -75,7 +73,6 @@ class MarketplaceViewSet(viewsets.ViewSet):
         for marketplace in all_marketplaces:
             marketplace['_id'] = str(marketplace['_id'])
         return Response(all_marketplaces)
-
 
     def create(self, request):
         try:
