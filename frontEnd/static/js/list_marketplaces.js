@@ -45,58 +45,85 @@ careerData.done(function (data) {
         let marketId = $(this).data("id");
         let row = $(this).closest("tr");
 
-        // You can fetch the existing data for the marketplace using an API call here, if needed.
-        // For simplicity, let's assume the data is already available in a variable called 'marketplaceData'.
+        // Make an API call to retrieve the marketplace details
+        $.ajax({
+            url: "/api/marketplaces/" + marketId + "/",
+            method: "GET",
+            success: function (marketplaceData) {
+                // Store the original image URL in a variable
+                let originalLogo = marketplaceData.logo;
 
-        // Show the Sweet Alert input fields for editing the marketplace details
-        swal.fire({
-            title: 'Edit Marketplace',
-            html: `
-            <input id="name" class="swal2-input" placeholder="Name" value="">
-            <input id="logo" class="swal2-input" placeholder="Logo URL" value="">
-        `,
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Save Changes',
-            preConfirm: () => {
-                const name = swal.getPopup().querySelector('#name').value;
-                const logo = swal.getPopup().querySelector('#logo').value;
-                return {name: name, logo: logo};
-            }
-        }).then((result) => {
-            if (!result.dismiss) {
-                const editedData = result.value;
-                // Make a PATCH request to update the marketplace details
-                $.ajax({
-                    type: "PATCH",
-                    url: "/api/marketplaces/" + marketId + "/",
-                    headers: {
-                        'Content-type': 'application/json',
-                        'X-CSRFToken': csrftoken,
-                    },
-                    data: JSON.stringify(editedData),
-                    success: function () {
-                        // Update the data in the table (if needed)
-                        // For simplicity, let's assume we don't need to update the table data here.
-                        swal.fire(
-                            'Saved!',
-                            'Changes have been saved.',
-                            'success'
-                        );
-                    },
-                    error: function () {
-                        swal.fire(
-                            'Error!',
-                            'An error occurred while saving changes.',
-                            'error'
-                        );
+                // Show the Sweet Alert input fields for editing the marketplace details
+                swal.fire({
+                    title: 'Edit Marketplace',
+                    html: `
+                <input id="name" class="swal2-input" placeholder="Name" value="${marketplaceData.name}">
+                <input id="logo" type="file" class="swal2-input" accept="image/*">
+                <img id="logo-preview" src="${marketplaceData.logo}" alt="Logo Preview" height="50" width="50">
+            `,
+                    // Add the necessary buttons and functionality for updating the data
+                    showCancelButton: true,
+                    confirmButtonText: 'Save Changes',
+                    preConfirm: () => {
+                        // Retrieve the edited values from the input fields
+                        const editedName = document.getElementById('name').value;
+                        const editedLogo = document.getElementById('logo').files[0]; // Get the file object
+
+                        // Create a FormData object to send the data to the server (includes the updated logo, if any)
+                        const formData = new FormData();
+                        formData.append('name', editedName);
+                        if (editedLogo) {
+                            formData.append('logo', editedLogo);
+                        }
+
+                        // Perform the API call to update the marketplace data using the PUT or PATCH method
+                        $.ajax({
+                            url: "/api/marketplaces/" + marketId + "/",
+                            method: "PATCH", // Use PUT or PATCH based on your API's requirements
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                // Handle the successful update here (e.g., show a success message)
+                                swal.fire('Changes Saved!', '', 'success');
+                            },
+                            error: function (error) {
+                                // Handle the error here (e.g., show an error message)
+                                console.error("Error updating marketplace:", error);
+                                swal.fire('Error', 'Error updating the marketplace', 'error');
+                            }
+                        });
                     }
                 });
+
+                // Add an event listener to the file input to handle logo preview
+                document.getElementById('logo').addEventListener('change', function (event) {
+                    const logoPreview = document.getElementById('logo-preview');
+                    const file = event.target.files[0];
+
+                    // Check if a file is selected
+                    if (file) {
+                        // Create a FileReader to read the file and display a preview
+                        const reader = new FileReader();
+
+                        // Define the function to be executed when the FileReader finishes loading
+                        reader.onload = function () {
+                            logoPreview.src = reader.result;
+                        };
+
+                        // Read the file as a URL (data URL)
+                        reader.readAsDataURL(file);
+                    } else {
+                        // If no file is selected or the selection is cancelled, reset the preview
+                        logoPreview.src = originalLogo;
+                    }
+                });
+            },
+            error: function (error) {
+                console.error("Error fetching marketplace details:", error);
             }
         });
     });
-
 
     $(document).on("click", ".delete-career", function () {
         let marketId = $(this).data("id");
@@ -139,3 +166,5 @@ careerData.done(function (data) {
         });
     });
 });
+
+

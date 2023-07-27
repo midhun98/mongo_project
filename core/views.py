@@ -53,6 +53,23 @@ class MarketplaceViewSet(viewsets.ViewSet):
     def partial_update(self, request, pk=None):
         try:
             data = request.data
+            name = data.get('name', None)
+            logo_file = request.FILES.get('logo', None)
+
+            # Handle logo file upload
+            if logo_file:
+                # Generate a unique file name and save the file to the server's media directory
+                filename = f"{uuid.uuid4()}.png"
+                file_path = os.path.join(settings.MEDIA_ROOT, 'marketplace_images', filename)
+
+                # Save the image to the media directory
+                with open(file_path, 'wb') as image_file:
+                    image_file.write(logo_file.read())
+
+                # Update the data dictionary with the new logo URL
+                data['logo'] = os.path.join(settings.MEDIA_URL, 'marketplace_images', filename)
+
+            # Perform the update on the database
             marketplace = marketplace_collection.find_one_and_update(
                 {'_id': ObjectId(pk)},
                 {'$set': data},
@@ -60,7 +77,7 @@ class MarketplaceViewSet(viewsets.ViewSet):
             )
 
             if marketplace:
-                return Response('Marketplace updated',status=status.HTTP_200_OK)
+                return Response('Marketplace updated', status=status.HTTP_200_OK)
             else:
                 return Response("Marketplace not found", status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
