@@ -19,21 +19,23 @@ careerData.done(function (data) {
         columns: [
             {data: 'name'},
             {
-            data: 'logo',
-            render: function (data) {
-                if (data) {
-                    // If the logo exists, show it as an image
-                    return '<img src="' + data + '" alt="Logo" height="50" width="50">';
-                } else {
-                    // If the logo doesn't exist, show a placeholder or an empty image
-                    return '<img src="" alt="No Logo" height="50" width="50">';
+                data: 'logo',
+                render: function (data) {
+                    if (data) {
+                        // If the logo exists, show it as an image
+                        return '<img src="' + data + '" alt="Logo" height="50" width="50">';
+                    } else {
+                        // If the logo doesn't exist, show a placeholder or an empty image
+                        return '<img src="" alt="No Logo" height="50" width="50">';
+                    }
                 }
-            }
             },
             {
                 data: null,
                 render: function (data) {
-                    return '<a href="#" class="btn btn-danger btn-sm delete-career"  data-id="' + data._id + '">Delete</a>';
+                    var editButton = '<a href="#" class="btn btn-primary btn-sm edit-career" data-id="' + data._id + '">Edit</a>';
+                    var deleteButton = '<a href="#" class="btn btn-danger btn-sm delete-career" data-id="' + data._id + '">Delete</a>';
+                    return editButton + ' ' + deleteButton;
                 }
             }
         ]
