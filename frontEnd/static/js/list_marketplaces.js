@@ -56,10 +56,9 @@ careerData.done(function (data) {
                 swal.fire({
                     title: 'Edit Marketplace',
                     html: `
-                <input id="name" class="swal2-input" placeholder="Name" value="${marketplaceData.name}">
-                <input id="logo" type="file" class="swal2-input" accept="image/*">
-                <img id="logo-preview" src="${marketplaceData.logo}" alt="Logo Preview" height="50" width="50">
-            `,
+                    <input id="name" class="swal2-input" placeholder="Name" value="${marketplaceData.name}">
+                    <input id="logo" type="file" class="swal2-input" accept="image/*">
+                    <img id="logo-preview" src="${marketplaceData.logo}" alt="Logo Preview" height="50" width="50">`,
                     // Add the necessary buttons and functionality for updating the data
                     showCancelButton: true,
                     confirmButtonText: 'Save Changes',
