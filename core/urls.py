@@ -3,7 +3,8 @@ from core import views
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 
-router.register('marketplaces', views.MarketplaceViewSet, basename='career')
+router.register('marketplaces', views.MarketplaceViewSet, basename='marketplaces')
+router.register('brands', views.BrandsViewSet, basename='brands')
 
 urlpatterns = [
     path('', views.index),

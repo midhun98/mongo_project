@@ -1,6 +1,6 @@
 from bson import ObjectId
 from django.http import HttpResponse
-from core.models import person_collection, marketplace_collection
+from core.models import person_collection, marketplace_collection, brands_collection
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 import os
@@ -53,7 +53,6 @@ class MarketplaceViewSet(viewsets.ViewSet):
     def partial_update(self, request, pk=None):
         try:
             data = request.data
-            name = data.get('name', None)
             logo_file = request.FILES.get('logo', None)
 
             # Handle logo file upload
@@ -116,6 +115,42 @@ class MarketplaceViewSet(viewsets.ViewSet):
                 }
 
             marketplace_collection.insert_one(records)
+            return Response("Marketplace added", status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error adding Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class BrandsViewSet(viewsets.ViewSet):
+    def create(self, request):
+        try:
+            name = request.data.get('name')
+            logo = request.data.get('logo')
+            market_place = request.data.get('market_place')
+
+            if logo:
+                # Generate a unique filename for the image
+                filename = f"{uuid.uuid4()}.png"
+
+                # Save the image to the media directory
+                with open(os.path.join(settings.MEDIA_ROOT, 'marketplace_images', filename), 'wb') as image_file:
+                    image_file.write(logo.read())
+
+                # Save the image URL in the database
+                records = {
+                    "name": name,
+                    "logo": os.path.join(settings.MEDIA_URL, 'marketplace_images', filename),
+                    "market_place": market_place
+                }
+            else:
+                # If no logo is provided, save None in the database
+                records = {
+                    "name": name,
+                    "logo": None,
+                    "market_place": market_place
+                }
+
+            brands_collection.insert_one(records)
             return Response("Marketplace added", status=status.HTTP_201_CREATED)
         except Exception as e:
             print("Error:", e)
