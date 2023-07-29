@@ -160,3 +160,14 @@ class BrandsViewSet(viewsets.ViewSet):
         for brand in all_brands:
             brand['_id'] = str(brand['_id'])
         return Response(all_brands)
+
+    def destroy(self, request, pk=None):
+        try:
+            brand = brands_collection.find_one_and_delete({'_id': ObjectId(pk)})
+            if brand:
+                return Response("brand deleted", status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response("brand not found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error deleting brand", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
