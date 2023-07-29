@@ -126,32 +126,31 @@ class BrandsViewSet(viewsets.ViewSet):
         try:
             name = request.data.get('name')
             logo = request.data.get('logo')
-            market_place = request.data.get('market_place')
-
+            marketplace = request.data.get('market')
             if logo:
                 # Generate a unique filename for the image
                 filename = f"{uuid.uuid4()}.png"
 
                 # Save the image to the media directory
-                with open(os.path.join(settings.MEDIA_ROOT, 'marketplace_images', filename), 'wb') as image_file:
+                with open(os.path.join(settings.MEDIA_ROOT, 'brands_images', filename), 'wb') as image_file:
                     image_file.write(logo.read())
 
                 # Save the image URL in the database
                 records = {
                     "name": name,
-                    "logo": os.path.join(settings.MEDIA_URL, 'marketplace_images', filename),
-                    "market_place": market_place
+                    "logo": os.path.join(settings.MEDIA_URL, 'brands_images', filename),
+                    "marketplace": marketplace
                 }
             else:
                 # If no logo is provided, save None in the database
                 records = {
                     "name": name,
                     "logo": None,
-                    "market_place": market_place
+                    "marketplace": marketplace
                 }
 
             brands_collection.insert_one(records)
-            return Response("Marketplace added", status=status.HTTP_201_CREATED)
+            return Response("Brand added", status=status.HTTP_201_CREATED)
         except Exception as e:
             print("Error:", e)
-            return Response("Error adding Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response("Error adding Brand", status=status.HTTP_500_INTERNAL_SERVER_ERROR)

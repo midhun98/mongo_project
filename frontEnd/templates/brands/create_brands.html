@@ -1,10 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
+    {% load static %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h1>Create a New Brand</h1>
+                <form id="create-marketplace-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="logo">Logo:</label>
+                        <input type="file" id="logo" name="logo" class="form-control-file">
+                    </div>
+                    <div class="form-group">
+                        <label for="market">Marketplace:</label>
+                        <select multiple id="market" name="market" class="form-control">
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="createMarketplace()">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function createMarketplace() {
+            const form = document.getElementById('create-marketplace-form');
+            const formData = new FormData(form);
 
-</body>
-</html>
+            // Get the selected marketplace IDs and convert them to an array
+            const selectedMarketplaces = Array.from(document.getElementById('market').selectedOptions).map(option => option.value);
+
+            // Append the selected marketplace IDs to the form data
+            formData.append('market', selectedMarketplaces);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/brands/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log('Brand created successfully:', data);
+                    showSuccessAlert();
+                },
+                error: function (error) {
+                    // Handle the error here (e.g., show an error message)
+                    console.error('Error creating Brand:', error);
+                    showErrorAlert();
+                }
+            });
+        }
+
+        // Function to fetch all marketplaces and populate the dropdown
+        function populateMarketplaces() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/marketplaces/', // Call the markeplace api
+                success: function (data) {
+                    const marketplaceDropdown = document.getElementById('market');
+                    data.forEach(marketplace => {
+                        const option = document.createElement('option');
+                        option.value = marketplace._id;
+                        option.text = marketplace.name;
+                        marketplaceDropdown.appendChild(option);
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching marketplaces:', error);
+                }
+            });
+        }
+
+        // Call the function to populate the marketplace dropdown on page load
+
+        populateMarketplaces();
+
+        function showSuccessAlert() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Brand added successfully!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        function showErrorAlert() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error creating Brand!',
+                text: 'Something went wrong. Please try again.',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    </script>
+
+{% endblock %}
