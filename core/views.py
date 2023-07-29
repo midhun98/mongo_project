@@ -154,3 +154,9 @@ class BrandsViewSet(viewsets.ViewSet):
         except Exception as e:
             print("Error:", e)
             return Response("Error adding Brand", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def list(self, request):
+        all_brands = list(brands_collection.find({}))
+        for brand in all_brands:
+            brand['_id'] = str(brand['_id'])
+        return Response(all_brands)
