@@ -159,6 +159,24 @@ class BrandsViewSet(viewsets.ViewSet):
         all_brands = list(brands_collection.find({}))
         for brand in all_brands:
             brand['_id'] = str(brand['_id'])
+
+            # Fetch the marketplace names if marketplaces exist
+            marketplace_ids = brand.get('marketplace')
+            if marketplace_ids:
+                marketplace_ids = marketplace_ids.split(",")
+                marketplace_names = []
+
+                for marketplace_id in marketplace_ids:
+                    marketplace = marketplace_collection.find_one({'_id': ObjectId(marketplace_id.strip())})
+                    if marketplace:
+                        marketplace_names.append(marketplace.get('name'))
+                    else:
+                        marketplace_names.append('Unknown Marketplace')
+
+                brand['marketplace'] = marketplace_names
+            else:
+                brand['marketplace'] = 'No Marketplace Assigned'
+
         return Response(all_brands)
 
     def destroy(self, request, pk=None):
