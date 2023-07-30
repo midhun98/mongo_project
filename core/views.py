@@ -200,3 +200,36 @@ class BrandsViewSet(viewsets.ViewSet):
         except Exception as e:
             print("Error:", e)
             return Response("Error retrieving Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def partial_update(self, request, pk=None):
+        try:
+            data = request.data
+            logo_file = request.FILES.get('logo', None)
+
+            # Handle logo file upload
+            if logo_file:
+                # Generate a unique file name and save the file to the server's media directory
+                filename = f"{uuid.uuid4()}.png"
+                file_path = os.path.join(settings.MEDIA_ROOT, 'brands_images', filename)
+
+                # Save the image to the media directory
+                with open(file_path, 'wb') as image_file:
+                    image_file.write(logo_file.read())
+
+                # Update the data dictionary with the new logo URL
+                data['logo'] = os.path.join(settings.MEDIA_URL, 'brands_images', filename)
+
+            # Perform the update on the database
+            brand = brands_collection.find_one_and_update(
+                {'_id': ObjectId(pk)},
+                {'$set': data},
+                return_document=True
+            )
+
+            if brand:
+                return Response('Brand updated', status=status.HTTP_200_OK)
+            else:
+                return Response("Brand not found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error updating Brand", status=status.HTTP_500_INTERNAL_SERVER_ERROR)

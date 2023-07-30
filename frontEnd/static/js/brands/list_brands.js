@@ -88,8 +88,8 @@ brandsData.done(function (data) {
                             },
                             error: function (error) {
                                 // Handle the error here (e.g., show an error message)
-                                console.error("Error updating marketplace:", error);
-                                swal.fire('Error', 'Error updating the marketplace', 'error');
+                                console.error("Error updating brand:", error);
+                                swal.fire('Error', 'Error updating the brand', 'error');
                             }
                         });
                     }
