@@ -119,7 +119,7 @@ brandsData.done(function (data) {
                 });
             },
             error: function (error) {
-                console.error("Error fetching marketplace details:", error);
+                console.error("Error fetching brands details:", error);
             }
         });
     });

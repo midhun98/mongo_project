@@ -189,3 +189,14 @@ class BrandsViewSet(viewsets.ViewSet):
         except Exception as e:
             print("Error:", e)
             return Response("Error deleting brand", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def retrieve(self, request, pk=None):
+        try:
+            brand = brands_collection.find_one({'_id': ObjectId(pk)}, {'_id': 0})
+            if brand:
+                return Response(brand, status=status.HTTP_200_OK)
+            else:
+                return Response("Marketplace not found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error retrieving Marketplace", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
