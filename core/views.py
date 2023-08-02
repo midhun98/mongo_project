@@ -1,6 +1,8 @@
 from bson import ObjectId
 from django.http import HttpResponse
-from core.models import person_collection, marketplace_collection, brands_collection
+from core.models import (users_collection,
+                         marketplace_collection,
+                         brands_collection)
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 import os
@@ -32,20 +34,6 @@ def index(request):
     print(result)
 
     return HttpResponse("<h1>app is running</h1>")
-
-
-def add_person(request):
-    records = {
-        "first_name": "Midhun",
-        "last_name": "S"
-    }
-    person_collection.insert_one(records)
-    return HttpResponse("New person added")
-
-
-def get_all_person(request):
-    persons = person_collection.find()
-    return HttpResponse(persons)
 
 
 class MarketplaceViewSet(viewsets.ViewSet):
@@ -258,4 +246,23 @@ class BrandsViewSet(viewsets.ViewSet):
 
 
 class UserVieswet(viewsets.ViewSet):
-    pass
+    def create(self, request):
+        try:
+            name = request.data.get('name')
+            email = request.data.get('email')
+            records = {
+                "name": name,
+                "email": email,
+            }
+
+            users_collection.insert_one(records)
+            return Response("User added", status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print("Error:", e)
+            return Response("Error adding users", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def list(self, request):
+        all_marketplaces = list(users_collection.find({}))
+        for marketplace in all_marketplaces:
+            marketplace['_id'] = str(marketplace['_id'])
+        return Response(all_marketplaces)

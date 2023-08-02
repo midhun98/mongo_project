@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+    {% load static %}
+    <!-- Breadcrumb -->
+    <title>Users</title>
+    <!-- /Breadcrumb -->
+    <!-- Main Content -->
+    <!-- Widget Item -->
+    <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-table me-1"></i>Users List</div>
+        <div class="card-body">
+            <table id="careers-table" class="table table-bordered table-striped table-dark dt-responsive nowrap"
+                   style="width:100%">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static "js/users/list_users.js" %}"></script>
+{% endblock scripts %}

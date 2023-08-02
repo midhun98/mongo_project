@@ -5,6 +5,7 @@ router = DefaultRouter()
 
 router.register('marketplaces', views.MarketplaceViewSet, basename='marketplaces')
 router.register('brands', views.BrandsViewSet, basename='brands')
+router.register('users', views.UserVieswet, basename='brands')
 
 urlpatterns = [
     path('index/', views.index),

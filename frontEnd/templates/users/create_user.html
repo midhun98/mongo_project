@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+    {% load static %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h1>Create a New User</h1>
+                <form id="create-marketplace-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="createMarketplace()">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createMarketplace() {
+            const form = document.getElementById('create-marketplace-form');
+            const formData = new FormData(form);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/users/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log('User created successfully:', data);
+                    showSuccessAlert();
+                },
+                error: function (error) {
+                    // Handle the error here (e.g., show an error message)
+                    console.error('Error creating User:', error);
+                    showErrorAlert();
+                }
+            });
+        }
+
+        function showSuccessAlert() {
+            Swal.fire({
+                icon: 'success',
+                title: 'User added successfully!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        function showErrorAlert() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error creating User!',
+                text: 'Something went wrong. Please try again.',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    </script>
+
+{% endblock %}
