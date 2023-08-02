@@ -9,6 +9,28 @@ from django.conf import settings
 
 
 def index(request):
+    desired_marketplace_id = ObjectId("64c228e8b14a7fcf0dcda36b")
+    brands_in_desired_marketplace = brands_collection.find({
+        "$or": [
+            {"marketplace": str(desired_marketplace_id)},
+            {"marketplace": {"$regex": f"{desired_marketplace_id}"}}
+        ]
+    })
+    for brand in brands_in_desired_marketplace:
+        print(brand)
+
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$name",  # Group by the brand name
+                "marketplace_count": {"$sum": 1}  # Count the number of occurrences for each brand name
+            }
+        }
+    ]
+
+    result = list(brands_collection.aggregate(pipeline))
+    print(result)
+
     return HttpResponse("<h1>app is running</h1>")
 
 
@@ -233,3 +255,7 @@ class BrandsViewSet(viewsets.ViewSet):
         except Exception as e:
             print("Error:", e)
             return Response("Error updating Brand", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserVieswet(viewsets.ViewSet):
+    pass

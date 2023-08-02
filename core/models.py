@@ -6,6 +6,7 @@ from mongoengine import Document, StringField, IntField, ImageField, DateTimeFie
 person_collection = db['Person']
 marketplace_collection = db['Marketplace']
 brands_collection = db['Brands']
+users_collection = db['Users']
 
 
 class MarketPlace(Document):
