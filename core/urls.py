@@ -9,7 +9,5 @@ router.register('users', views.UserVieswet, basename='brands')
 
 urlpatterns = [
     path('index/', views.index),
-    path('add/', views.add_person),
-    path('show/', views.get_all_person),
     path('api/', include(router.urls)),
 ]
