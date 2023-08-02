@@ -8,6 +8,12 @@ from rest_framework.response import Response
 import os
 import uuid
 from django.conf import settings
+from django.core.mail import send_mail
+from django.http import JsonResponse
+import numpy as np
+import cv2
+from tensorflow.keras.models import load_model
+from django.views import View
 
 
 def index(request):
@@ -266,3 +272,57 @@ class UserVieswet(viewsets.ViewSet):
         for marketplace in all_marketplaces:
             marketplace['_id'] = str(marketplace['_id'])
         return Response(all_marketplaces)
+
+
+class FireDetectionView(View):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.model = load_model('trained_models/case_study2.h5')
+        self.email_sent = False
+
+    def preprocess_image(self, img):
+        img = cv2.resize(img, (300, 300))
+        img = np.array(img) / 255.0
+        img = np.expand_dims(img, axis=0)
+        return img
+
+    def predict_fire(self, frame):
+        x = self.preprocess_image(frame)
+        classes = self.model.predict(x)
+        if classes[0][0] < 0.5:
+            result = "not fire"
+        else:
+            result = "fire"
+            # Send an email when fire is detected
+            if not self.email_sent:
+                subject = "Fire Detected!"
+                content = "A fire has been detected by the system."
+                email = 'your_email@example.com'
+                send_mail(subject, content, email, ['midhunskani@gmail.com'])
+                self.email_sent = True
+        return result
+
+    def get(self, request):
+        cap = cv2.VideoCapture(0)
+
+        while True:
+            # Capture frame-by-frame from the webcam feed
+            ret, frame = cap.read()
+
+            # Perform fire detection on the frame
+            result = self.predict_fire(frame)
+
+            # Display the result on the frame
+            cv2.putText(frame, result, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0) if result == "not fire" else (0, 0, 255), 2)
+            cv2.imshow('Fire Detection', frame)
+
+            # Stop the loop when 'q' is pressed
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        # Release the webcam and close all OpenCV windows
+        cap.release()
+        cv2.destroyAllWindows()
+
+        return JsonResponse({"message": "Fire detection started!"})
