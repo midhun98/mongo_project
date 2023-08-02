@@ -1,5 +1,7 @@
 from bson import ObjectId
 from django.http import HttpResponse
+from django.shortcuts import render
+
 from core.models import (users_collection,
                          marketplace_collection,
                          brands_collection)
@@ -324,5 +326,4 @@ class FireDetectionView(View):
         # Release the webcam and close all OpenCV windows
         cap.release()
         cv2.destroyAllWindows()
-
-        return JsonResponse({"message": "Fire detection started!"})
+        return JsonResponse({"message": "Fire detected!"})

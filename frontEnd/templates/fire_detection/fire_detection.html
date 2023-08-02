@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fire Detection</title>
+</head>
+<body>
+    <h1>Fire Detection</h1>
+    <div>
+        <button id="start-btn">Start Fire Detection</button>
+        <button id="stop-btn">Stop Fire Detection</button>
+    </div>
+    <div id="video-feed">
+        <!-- The video feed will be displayed here -->
+    </div>
+
+    <script>
+        var videoFeed = document.getElementById('video-feed');
+        var startBtn = document.getElementById('start-btn');
+        var stopBtn = document.getElementById('stop-btn');
+        var ws;
+
+        startBtn.onclick = function() {
+            ws = new WebSocket('ws://' + window.location.host + '/fire-detection/');
+            ws.onmessage = function(event) {
+                var result = JSON.parse(event.data);
+                if (result.message === 'Fire detection completed!') {
+                    stopFireDetection();
+                }
+            };
+        };
+
+        stopBtn.onclick = function() {
+            stopFireDetection();
+        };
+
+        function stopFireDetection() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        function displayVideo(stream) {
+            var video = document.createElement('video');
+            video.autoplay = true;
+            video.srcObject = stream;
+            videoFeed.appendChild(video);
+        }
+
+        function startVideo() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        displayVideo(stream);
+                    })
+                    .catch(function(error) {
+                        console.error('Error accessing webcam:', error);
+                    });
+            } else {
+                console.error('getUserMedia not supported on this browser.');
+            }
+        }
+
+        startVideo();
+    </script>
+</body>
+</html>
