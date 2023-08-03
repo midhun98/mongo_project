@@ -342,6 +342,7 @@ class FireDetectionAPI(APIView):
             model = load_model('trained_models/case_study2.h5')
 
             result = predict_fire(image_path, model)
+
             return JsonResponse({'prediction': result})
 
         return JsonResponse({'error': 'Invalid request.'})
