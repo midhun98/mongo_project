@@ -334,7 +334,7 @@ class FireDetectionAPI(APIView):
     def post(self, request, *args, **kwargs):
         if request.FILES.get('image'):
             image = request.FILES['image']
-            image_path = 'temp_image.jpg'
+            image_path = 'media/temp_image.jpg'
             with open(image_path, 'wb+') as destination:
                 for chunk in image.chunks():
                     destination.write(chunk)

@@ -12,6 +12,6 @@ router.register('users', views.UserVieswet, basename='brands')
 urlpatterns = [
     path('index/', views.index),
     path('api/', include(router.urls)),
-    path('fire-detection/', views.FireDetectionView.as_view(), name='fire_detection'),
+    path('fire-detect-cam/', views.FireDetectionView.as_view(), name='fire_detection_cam'),
     path('api/fire_detection/', views.FireDetectionAPI.as_view(), name='fire_detection_api'),
 ]
