@@ -30,18 +30,6 @@ def index(request):
     for brand in brands_in_desired_marketplace:
         print(brand)
 
-    pipeline = [
-        {
-            "$group": {
-                "_id": "$name",  # Group by the brand name
-                "marketplace_count": {"$sum": 1}  # Count the number of occurrences for each brand name
-            }
-        }
-    ]
-
-    result = list(brands_collection.aggregate(pipeline))
-    print(result)
-
     return HttpResponse("<h1>app is running</h1>")
 
 
