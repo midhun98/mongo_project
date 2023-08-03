@@ -1,16 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Fire Detection API</title>
-</head>
-<body>
-    <h1>Fire Detection</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" name="image" id="imageInput">
-        <input type="button" value="Detect Fire" onclick="detectFire()">
-    </form>
-    <div id="result"></div>
+{% extends "base.html" %}
+{% block content %}
+    <title>Fire Detection</title>
 
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h1 class="mb-4">Fire Detection</h1>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <input type="file" name="image" id="imageInput" class="form-control">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="detectFire()">Detect Fire</button>
+                </form>
+                <div id="result" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
     <script>
         function detectFire() {
             const formData = new FormData();
@@ -38,5 +43,4 @@
             });
         }
     </script>
-</body>
-</html>
+{% endblock %}
