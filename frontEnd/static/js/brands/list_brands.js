@@ -14,7 +14,7 @@ brandsData.done(function (data) {
     'use strict';
 
     // Initialize the datatable
-    $('#careers-table').DataTable({
+    $('#brands-table').DataTable({
         data: data,
         columns: [
             {data: 'name'},
