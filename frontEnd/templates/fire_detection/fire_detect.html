@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fire Detection API</title>
+</head>
+<body>
+    <h1>Fire Detection</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="image" id="imageInput">
+        <input type="button" value="Detect Fire" onclick="detectFire()">
+    </form>
+    <div id="result"></div>
+
+    <script>
+        function detectFire() {
+            const formData = new FormData();
+            const imageInput = document.getElementById('imageInput');
+            const file = imageInput.files[0];
+
+            if (!file) {
+                alert('Please select an image.');
+                return;
+            }
+
+            formData.append('image', file);
+
+            fetch('/api/fire_detection/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerText = 'Prediction: ' + data.prediction;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

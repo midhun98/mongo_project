@@ -13,4 +13,5 @@ urlpatterns = [
     path('index/', views.index),
     path('api/', include(router.urls)),
     path('fire-detection/', views.FireDetectionView.as_view(), name='fire_detection'),
+    path('api/fire_detection/', views.FireDetectionAPI.as_view(), name='fire_detection_api'),
 ]

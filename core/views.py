@@ -16,7 +16,8 @@ import numpy as np
 import cv2
 from tensorflow.keras.models import load_model
 from django.views import View
-
+from rest_framework.views import APIView
+from core.utils import predict_fire
 
 def index(request):
     desired_marketplace_id = ObjectId("64c228e8b14a7fcf0dcda36b")
@@ -327,3 +328,21 @@ class FireDetectionView(View):
         cap.release()
         cv2.destroyAllWindows()
         return JsonResponse({"message": "Fire detected!"})
+
+
+class FireDetectionAPI(APIView):
+    def post(self, request, *args, **kwargs):
+        if request.FILES.get('image'):
+            image = request.FILES['image']
+            image_path = 'temp_image.jpg'
+            with open(image_path, 'wb+') as destination:
+                for chunk in image.chunks():
+                    destination.write(chunk)
+
+            model = load_model('trained_models/case_study2.h5')
+
+            result = predict_fire(image_path, model)
+            print('result', result)
+            return JsonResponse({'prediction': result})
+
+        return JsonResponse({'error': 'Invalid request.'})

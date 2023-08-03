@@ -10,5 +10,6 @@ urlpatterns = [
     path("list_brands/", TemplateView.as_view(template_name="brands/list_brands.html"), name='list-brands'),
     path("create_user/", TemplateView.as_view(template_name="users/create_user.html"), name='create-user'),
     path("list_users/", TemplateView.as_view(template_name="users/list_users.html"), name='list-users'),
+    path("fire_detect/", TemplateView.as_view(template_name="fire_detection/fire_detect.html"), name='fire-detect'),
 
 ]
