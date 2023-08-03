@@ -327,7 +327,7 @@ class FireDetectionView(View):
         # Release the webcam and close all OpenCV windows
         cap.release()
         cv2.destroyAllWindows()
-        return JsonResponse({"message": "Fire detected!"})
+        return JsonResponse({"message": "Ok"})
 
 
 class FireDetectionAPI(APIView):
